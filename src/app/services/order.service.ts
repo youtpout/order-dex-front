@@ -41,6 +41,29 @@ export class OrderService {
   }
 `;
 
+  queryPair = gql`
+query($first: Int, $orderBy: String, $orderDirection: String, $where: Pair_filter) {
+  pairs(
+    first: 1, where : $where) {
+      tokenBuy
+      tokenSell
+      sold(first: $first, where : {amount_gt: 0}, orderBy: $orderBy, orderDirection: $orderDirection) {
+        amount
+        id
+        reverse
+        price
+      }
+      buy(first: $first, where : {amount_gt: 0}, orderBy: $orderBy, orderDirection: $orderDirection) {
+        amount
+        id
+        price
+        reverse
+      }
+  }
+}
+`;
+
+
   constructor(private _apollo: Apollo) {
     const win: any = window;
 
@@ -76,17 +99,6 @@ export class OrderService {
     const orderBy = "id";
     const orderDirection = "desc";
 
-    // let result = this.client.query({
-    //   query: gql(this.queryTx),
-    //   variables: {
-    //     first: 100,
-    //     skip: page * resultsPerPage,
-    //     orderBy: orderBy,
-    //     orderDirection: orderDirection,
-    //     where: where
-    //   },
-    // }).then();
-
     return this._apollo.query({
       query: this.queryTx,
       variables: {
@@ -100,6 +112,31 @@ export class OrderService {
       let info = r.data as any;
       if (info?.orders?.length) {
         return info?.orders as any[];
+      }
+      return [];
+    }));
+  }
+
+  getPairsPrice(token0: string, token1: string): Observable<any[]> {
+    let where: any = { tokenBuy: token0, tokenSell: token1 };
+    const resultsPerPage = 10;
+    const page = 0;
+    const orderBy = "price";
+    const orderDirection = "desc";
+
+    return this._apollo.query({
+      query: this.queryPair,
+      variables: {
+        first: 100,
+        orderBy: orderBy,
+        orderDirection: orderDirection,
+        where: where
+      },
+    }).pipe(map(r => {
+      let info = r.data as any;
+      console.log("pairs", info);
+      if (info?.pairs?.length) {
+        return info?.pairs as any[];
       }
       return [];
     }));

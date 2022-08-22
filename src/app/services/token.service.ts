@@ -15,6 +15,7 @@ export class TokenService {
   _signer: any;
   _contract: OrderDexToken;
   oneToken: BigNumber = ethers.utils.parseUnits("1", 18);
+  maxUint256: BigNumber = (BigNumber.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
   constructor() {
     const win: any = window;
@@ -50,6 +51,20 @@ export class TokenService {
     }
   }
 
+  getAllowance(tokenAddress: string, account: string): Observable<BigNumber> {
+    const token = new ethers.Contract(tokenAddress, ERC20__factory.abi, this._signer) as ERC20;
+    console.log("tokenAddress", tokenAddress, account);
+    return from(token.allowance(account, environment.contractAddress));
+  }
 
+  approve(tokenAddress: string): Observable<any> {
+    return from(this.approveToken(tokenAddress));
+  }
+
+  async approveToken(tokenAddress: string): Promise<any> {
+    const token = new ethers.Contract(tokenAddress, ERC20__factory.abi, this._signer) as ERC20;
+    let tx = await token.approve(environment.contractAddress, this.maxUint256);
+    await tx.wait();
+  }
 
 }

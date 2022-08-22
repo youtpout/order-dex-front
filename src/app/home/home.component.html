@@ -22,6 +22,17 @@
     >
       Add ODT token to metamask
     </button>
+    <button
+      color="warn"
+      class="fix"
+      style="margin: 1rem"
+      [disabled]="!account"
+      mat-button
+      mat-raised-button
+      (click)="approve()"
+    >
+      Approve ODT
+    </button>
     <router-outlet></router-outlet>
   </div>
 </div>

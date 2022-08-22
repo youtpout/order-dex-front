@@ -1,5 +1,27 @@
 <div>
   <h3>{{ pair }}</h3>
+  <div *ngIf="prices | async as pairPrices">
+    <div *ngFor="let item of pairPrices">
+      <div *ngIf="item.buy?.length">
+        <h4>Offer</h4>
+        <div *ngFor="let buy of item.buy">
+          <span>Price : {{ buy.price }}</span>
+          <span style="margin-left: 10px"
+            >Amount : {{ buy.amount | hydra }}</span
+          >
+        </div>
+      </div>
+      <div *ngIf="item.sold?.length">
+        <h4>Ask</h4>
+        <div *ngFor="let sold of item.sold">
+          <span>Price : {{ sold.price }}</span>
+          <span style="margin-left: 10px"
+            >Quantity : {{ sold.amount | hydra }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
   <mat-tab-group>
     <mat-tab label="Buy">
       <form class="flex-column" [formGroup]="form">
@@ -26,6 +48,17 @@
           >
         </mat-form-field>
         <span>{{ message }}</span>
+        <button
+          (click)="approve(token0)"
+          color="warn"
+          class="fix"
+          [disabled]="allow0"
+          style="margin-bottom: 1rem"
+          mat-button
+          mat-raised-button
+        >
+          Approve
+        </button>
         <button
           (click)="buy()"
           color="primary"
@@ -62,6 +95,18 @@
             >price is required</mat-error
           >
         </mat-form-field>
+        <span>{{ message }}</span>
+        <button
+          (click)="approve(token1)"
+          color="warn"
+          class="fix"
+          style="margin-bottom: 1rem"
+          [disabled]="allow1"
+          mat-button
+          mat-raised-button
+        >
+          Approve
+        </button>
         <button
           (click)="sell()"
           color="accent"
