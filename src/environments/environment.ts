@@ -3,8 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  tokenAddress: '0x5bd8391CBC43eE396F5614A517691C7d08268333',
+  contractAddress: '0xB79aF1F3dD7e25Da902363ef5E220470b9288021',
+  chainId: '0x13881',
+  explorer: 'https://mumbai.polygonscan.com/'
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

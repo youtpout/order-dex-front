@@ -1,0 +1,16 @@
+<div class="home-page">
+  <nav class="pair-list" color="accent">
+    <a
+      class="menu-link"
+      color="secondary"
+      [routerLink]="['/order', 'matic-odt']"
+    >
+      Matic/ODT
+    </a>
+    <a class="menu-link" [routerLink]="['/order', 'matic-weth']">Matic/WETH</a>
+    <a class="menu-link" [routerLink]="['/order', 'weth-odt']">WETH/ODT</a>
+  </nav>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -1,0 +1,85 @@
+<div>
+  <h3>{{ pair }}</h3>
+  <mat-tab-group>
+    <mat-tab label="Buy">
+      <form class="flex-column" [formGroup]="form">
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Quantity"
+            required
+            formControlName="quantity"
+          />
+          <mat-error *ngIf="form.get('quantity')?.hasError('required')"
+            >quantity is required</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Price"
+            required
+            formControlName="price"
+          />
+          <mat-error *ngIf="form.get('price')?.hasError('required')"
+            >price is required</mat-error
+          >
+        </mat-form-field>
+        <button
+          (click)="buy()"
+          color="primary"
+          class="fix"
+          [disabled]="!account"
+          mat-button
+          mat-raised-button
+        >
+          buy
+        </button>
+      </form>
+    </mat-tab>
+    <mat-tab label="Sell">
+      <form class="flex-column" [formGroup]="form">
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Quantity"
+            required
+            formControlName="quantity"
+          />
+          <mat-error *ngIf="form.get('quantity')?.hasError('required')"
+            >quantity is required</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Price"
+            required
+            formControlName="price"
+          />
+          <mat-error *ngIf="form.get('price')?.hasError('required')"
+            >price is required</mat-error
+          >
+        </mat-form-field>
+        <button
+          (click)="sell()"
+          color="accent"
+          class="fix"
+          [disabled]="!account"
+          mat-button
+          mat-raised-button
+        >
+          sell
+        </button>
+      </form>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="connect" *ngIf="!account">
+    Connect your metamask wallet with the button in upper right to create token
+    from this site
+  </div>
+  <div class="info">
+    Create order cost 2 ODT, only ODT pair are free from fees.
+  </div>
+</div>
