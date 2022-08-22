@@ -29,13 +29,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HistoryComponent } from './history/history.component';
 import { OrderComponent } from './order/order.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { GraphQLModule } from './graphql.module';
+import { HydraPipe } from './pipes/hydra.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     HistoryComponent,
-    OrderComponent
+    OrderComponent,
+    HydraPipe
   ],
   imports: [
     BrowserModule,
@@ -63,7 +66,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatSelectModule,
     MatSidenavModule,
     MatProgressSpinnerModule,
-    MatTabsModule
+    MatTabsModule,
+    GraphQLModule
   ],
   providers: [],
   bootstrap: [AppComponent]

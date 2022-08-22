@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { BigNumber } from 'ethers';
 import { environment } from 'src/environments/environment';
 import { IOrderCreate } from '../models/order-create';
 import { GlobalService } from '../services/global.service';
@@ -53,7 +54,7 @@ export class OrderComponent implements OnInit {
 
     this._walletService.account$.subscribe(r => {
       if (r.length) {
-        this.account = r[0];
+        this.account = r;
       }
     });
 
@@ -103,7 +104,7 @@ export class OrderComponent implements OnInit {
       this._orderService.createOrderFromETH(order).subscribe(
         {
           next: () => {
-            this._notification.showSuccess('Order created, you can see your order on History page');
+            this._notification.showSuccess('Order created, you can see your order on History page soon');
             this._globalService.setLoading(false);
           },
           error: (e) => {
@@ -116,7 +117,7 @@ export class OrderComponent implements OnInit {
       this._orderService.createOrder(order).subscribe(
         {
           next: () => {
-            this._notification.showSuccess('Order created, you can see your order on History page');
+            this._notification.showSuccess('Order created, you can see your order on History page soon');
             this._globalService.setLoading(false);
           },
           error: (e) => {
@@ -128,4 +129,20 @@ export class OrderComponent implements OnInit {
       );
     }
   }
+
+  // cancelOrder(id: number) {
+  //   this._orderService.cancelOrder(id).subscribe(
+  //     {
+  //       next: () => {
+  //         this._notification.showSuccess('Order canceled, you can see your order on History page');
+  //         this._globalService.setLoading(false);
+  //       },
+  //       error: (e) => {
+  //         console.log(e);
+  //         this._notification.showError(e.data?.message || e.message);
+  //         this._globalService.setLoading(false);
+  //       }
+  //     }
+  //   );
+  // }
 }

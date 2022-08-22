@@ -1,1 +1,91 @@
-<p>history works!</p>
+<div *ngIf="history | async as histories" class="history-page">
+  <table mat-table [dataSource]="histories" class="mat-elevation-z8">
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell style="width: 150px" *matHeaderCellDef>Order Id</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.id }}
+      </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="tokenToSell">
+      <th
+        mat-header-cell
+        style="width: 100px; margin-left: 10px"
+        *matHeaderCellDef
+      >
+        Token to sell
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.tokenToSell }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="tokenToBuy">
+      <th
+        mat-header-cell
+        style="width: 100px; margin-left: 10px"
+        *matHeaderCellDef
+      >
+        Token to buy
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.tokenToBuy }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="filled">
+      <th
+        mat-header-cell
+        style="width: 100px; margin-left: 10px"
+        *matHeaderCellDef
+      >
+        Filled
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ (element.amountToBuyCompleted / element.amountToBuy) * 100 }} %
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th
+        mat-header-cell
+        style="width: 100px; margin-left: 10px"
+        *matHeaderCellDef
+      >
+        Status
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <ng-container [ngSwitch]="element.status">
+          <ng-container *ngSwitchCase="0"> Active </ng-container>
+          <ng-container *ngSwitchCase="1"> Canceled </ng-container>
+          <ng-container *ngSwitchCase="2"> Sold </ng-container>
+          <ng-container *ngSwitchCase="3"> Canceled </ng-container>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          mat-button
+          color="primary"
+          *ngIf="element.status === 0"
+          mat-raised-button
+          (click)="cancel(element.id)"
+        >
+          Cancel
+        </button>
+
+        <span style="color: green; margin-left: 10px" *ngIf="element.isOwner"
+          >My offer</span
+        >
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
