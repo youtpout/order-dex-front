@@ -33,6 +33,23 @@ export class TokenService {
     return from(token.balanceOf(address)).pipe(map(r => r.div(this.oneToken).toNumber()));
   }
 
+  async addToken(): Promise<any> {
+    const win: any = window;
+    if (win.ethereum) {
+      const wasAdded = await win.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: environment.tokenAddress, // The address that the token is at.
+            symbol: "ODT", // A ticker symbol or shorthand, up to 5 chars.
+            decimals: 18, // The number of decimals in the token
+          },
+        },
+      });
+    }
+  }
+
 
 
 }

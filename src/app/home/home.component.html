@@ -11,6 +11,17 @@
     <a class="menu-link" [routerLink]="['/order', 'weth-odt']">WETH/ODT</a>
   </nav>
   <div>
+    <button
+      color="accent"
+      class="fix"
+      style="margin: 1rem"
+      [disabled]="!account"
+      mat-button
+      mat-raised-button
+      (click)="add()"
+    >
+      Add ODT token to metamask
+    </button>
     <router-outlet></router-outlet>
   </div>
 </div>

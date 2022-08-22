@@ -1,4 +1,107 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./colors.scss";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+$dodger-blue: #4d7bf3;
+$white: white;
+// couleur des notifications
+$notification-success: #3e843e;
+$notification-warning: orange;
+$notification-error: #f03359;
+$notification-notify: $dodger-blue;
+
+$background-error: #fef0f0;
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  min-height: 100vh;
+
+  background-position: center;
+  background-position-y: center;
+  background-repeat: no-repeat;
+}
+
+.mat-drawer-container {
+  background-color: rgba($color: #fafafafa, $alpha: 0.8);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.margin-top {
+  margin-top: 10px;
+}
+
+// Notification snackbar
+.mat-snack-bar-container {
+  &[class*="snackbar-notification-"],
+  [class*="snackbar-notification-"] {
+    color: $white;
+    font-size: 15px;
+
+    .mat-simple-snackbar {
+      font-size: inherit;
+    }
+  }
+
+  &.snackbar-notification-success,
+  div.snackbar-notification-success {
+    background-color: $notification-success;
+  }
+
+  &.snackbar-notification-warning,
+  div.snackbar-notification-warning {
+    background-color: $notification-warning;
+  }
+
+  &.snackbar-notification-error,
+  div.snackbar-notification-error {
+    background-color: $notification-error;
+  }
+
+  &.snackbar-notification-notify,
+  div.snackbar-notification-notify {
+    background-color: $notification-notify;
+  }
+}
+
+// spinner
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner:before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  border-top-color: #000000;
+  animation: spinner 0.8s linear infinite;
+}
+
+.auction-info {
+  .nft-card {
+    height: 500px !important;
+  }
+}
+
+button {
+  cursor: pointer;
+}

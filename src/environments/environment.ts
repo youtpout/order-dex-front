@@ -6,6 +6,8 @@ export const environment = {
   production: false,
   tokenAddress: '0x5bd8391CBC43eE396F5614A517691C7d08268333',
   contractAddress: '0xB79aF1F3dD7e25Da902363ef5E220470b9288021',
+  wmaticAddress: '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889',
+  wethAddress: '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa',
   chainId: '0x13881',
   explorer: 'https://mumbai.polygonscan.com/'
 };
