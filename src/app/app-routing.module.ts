@@ -6,7 +6,7 @@ import { OrderComponent } from './order/order.component';
 
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '/order/matic-odt' },
+  { path: '', pathMatch: 'full', redirectTo: '/order/odt-matic' },
   {
     path: 'order', component: HomeComponent, children: [{
       path: ':pair', component: OrderComponent,

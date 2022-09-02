@@ -7,11 +7,11 @@
         <div *ngFor="let buy of item.buy">
           <span>Price : {{ buy.price }}</span>
           <span style="margin-left: 10px"
-            >Amount : {{ buy.amount | hydra }}</span
+            >Quantity : {{ buy.amount | hydra }}</span
           >
         </div>
       </div>
-      <div *ngIf="item.sold?.length">
+      <div *ngIf="item.buy?.length">
         <h4>Ask</h4>
         <div *ngFor="let sold of item.sold">
           <span>Price : {{ sold.price }}</span>
@@ -24,30 +24,41 @@
   </div>
   <mat-tab-group>
     <mat-tab label="Buy">
-      <form class="flex-column" [formGroup]="form">
+      <form class="flex-column" [formGroup]="formBuy">
         <mat-form-field class="fix">
           <input
             matInput
-            placeholder="Quantity"
-            required
-            formControlName="quantity"
-          />
-          <mat-error *ngIf="form.get('quantity')?.hasError('required')"
-            >quantity is required</mat-error
-          >
-        </mat-form-field>
-        <mat-form-field class="fix">
-          <input
-            matInput
-            placeholder="Price"
+            placeholder="Price ({{ pair0 }})"
             required
             formControlName="price"
           />
-          <mat-error *ngIf="form.get('price')?.hasError('required')"
-            >price is required</mat-error
+          <mat-error *ngIf="formBuy.get('price')?.hasError('required')"
+            >price {{ pair0 }} is required</mat-error
           >
         </mat-form-field>
-        <span>{{ message }}</span>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Quantity ({{ pair0 }})"
+            required
+            formControlName="quantity"
+          />
+          <mat-error *ngIf="formBuy.get('quantity')?.hasError('required')"
+            >quantity {{ pair0 }} is required</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Total ({{ pair1 }})"
+            required
+            formControlName="total"
+          />
+          <mat-error *ngIf="formBuy.get('total')?.hasError('required')"
+            >total {{ pair1 }} is required</mat-error
+          >
+        </mat-form-field>
+        <span>Balance {{ balance1 }} {{ pair1 }}</span>
         <button
           (click)="approve(token0)"
           color="warn"
@@ -57,7 +68,7 @@
           mat-button
           mat-raised-button
         >
-          Approve
+          Approve spend {{ pair1 }}
         </button>
         <button
           (click)="buy()"
@@ -67,35 +78,46 @@
           mat-button
           mat-raised-button
         >
-          buy
+          Buy {{ pair0 }}
         </button>
       </form>
     </mat-tab>
     <mat-tab label="Sell">
-      <form class="flex-column" [formGroup]="form">
+      <form class="flex-column" [formGroup]="formSell">
         <mat-form-field class="fix">
           <input
             matInput
-            placeholder="Quantity"
-            required
-            formControlName="quantity"
-          />
-          <mat-error *ngIf="form.get('quantity')?.hasError('required')"
-            >quantity is required</mat-error
-          >
-        </mat-form-field>
-        <mat-form-field class="fix">
-          <input
-            matInput
-            placeholder="Price"
+            placeholder="Price ({{ pair0 }})"
             required
             formControlName="price"
           />
-          <mat-error *ngIf="form.get('price')?.hasError('required')"
-            >price is required</mat-error
+          <mat-error *ngIf="formSell.get('price')?.hasError('required')"
+            >price {{ pair0 }} is required</mat-error
           >
         </mat-form-field>
-        <span>{{ message }}</span>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Quantity ({{ pair0 }})"
+            required
+            formControlName="quantity"
+          />
+          <mat-error *ngIf="formSell.get('quantity')?.hasError('required')"
+            >quantity {{ pair0 }} is required</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field class="fix">
+          <input
+            matInput
+            placeholder="Total ({{ pair1 }})"
+            required
+            formControlName="total"
+          />
+          <mat-error *ngIf="formSell.get('total')?.hasError('required')"
+            >total {{ pair1 }} is required</mat-error
+          >
+        </mat-form-field>
+        <span>Balance {{ balance0 }} {{ pair0 }}</span>
         <button
           (click)="approve(token1)"
           color="warn"
@@ -105,7 +127,7 @@
           mat-button
           mat-raised-button
         >
-          Approve
+          Approve spend {{ pair0 }}
         </button>
         <button
           (click)="sell()"
@@ -115,7 +137,7 @@
           mat-button
           mat-raised-button
         >
-          sell
+          Sell {{ pair0 }}
         </button>
       </form>
     </mat-tab>

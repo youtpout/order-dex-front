@@ -118,7 +118,7 @@ query($first: Int, $orderBy: String, $orderDirection: String, $where: Pair_filte
   }
 
   getPairsPrice(token0: string, token1: string): Observable<any[]> {
-    let where: any = { tokenBuy: token0, tokenSell: token1 };
+    let where: any = { tokenBuy: token1, tokenSell: token0 };
     const resultsPerPage = 10;
     const page = 0;
     const orderBy = "price";

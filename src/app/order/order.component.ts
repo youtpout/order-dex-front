@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BigNumber } from 'ethers';
@@ -20,20 +21,32 @@ import { WalletService } from '../services/wallet.service';
 export class OrderComponent implements OnInit {
 
   account: any;
-  pair: string | null = "matic-odt";
-  token0: string = environment.wmaticAddress;
-  token1: string = environment.tokenAddress;
-  message: string = "";
+  pair: string | null = "odt-matic";
+  token0: string = environment.tokenAddress;
+  token1: string = environment.wmaticAddress;
+  pair0: string = "odt";
+  pair1: string = "matic";
   prices: Observable<any[]> = of([]);
   allowance0: BigNumber = BigNumber.from(0);
   allowance1: BigNumber = BigNumber.from(0);
   allow0 = false;
   allow1 = false;
+  balance0: number = 0;
+  balance1: number = 0;
 
-  form: FormGroup = new FormGroup({
+  formBuy: FormGroup = new FormGroup({
     quantity: new FormControl(1, Validators.required),
     price: new FormControl(1, Validators.required),
+    total: new FormControl(1, Validators.required)
   });
+
+
+  formSell: FormGroup = new FormGroup({
+    quantity: new FormControl(1, Validators.required),
+    price: new FormControl(1, Validators.required),
+    total: new FormControl(1, Validators.required)
+  });
+
 
 
   constructor(private _orderService: OrderService,
@@ -45,26 +58,23 @@ export class OrderComponent implements OnInit {
     private _globalService: GlobalService) { }
 
   ngOnInit(): void {
-    let total = this.form.value.quantity * this.form.value.price;
+    let total = this.formBuy.value.quantity * this.formBuy.value.price;
     let pairName = this.pair!.split('-');
     if (pairName?.length > 1) {
-      this.message = `${this.form.value.quantity} ${pairName[1]} for ${total} ${pairName[0]}`;
+      this.pair0 = pairName[0]?.toUpperCase();
+      this.pair1 = pairName[1]?.toUpperCase();
     };
-    this.form.valueChanges.subscribe((r: any) => {
-      if (r.quantity && r.price) {
-        total = r.quantity * r.price;
-        pairName = this.pair!.split('-');
-        if (pairName?.length > 1) {
-          this.message = `${r.quantity} ${pairName[1]} for ${total} ${pairName[0]}`;
-        };
-      }
-    });
+
+    this.formChanged(this.formBuy);
+    this.formChanged(this.formSell);
+
 
     this._walletService.account$.subscribe(r => {
       if (r.length) {
         this.account = r;
 
         this.getAllowance();
+        this.getBalances();
       }
     });
 
@@ -72,13 +82,16 @@ export class OrderComponent implements OnInit {
       this.pair = params.get('pair');
       let pairName = this.pair!.split('-');
       if (pairName?.length > 1) {
-        this.message = `${this.form.value.quantity} ${pairName[1]} for ${total} ${pairName[0]}`;
-
+        this.pair0 = pairName[0]?.toUpperCase();
+        this.pair1 = pairName[1]?.toUpperCase();
         if (pairName[0].toLowerCase() === "weth") {
           this.token0 = environment.wethAddress;
         }
         if (pairName[0].toLowerCase() === "matic") {
           this.token0 = environment.wmaticAddress;
+        }
+        if (pairName[0].toLowerCase() === "odt") {
+          this.token0 = environment.tokenAddress;
         }
         if (pairName[1].toLowerCase() === "odt") {
           this.token1 = environment.tokenAddress;
@@ -86,11 +99,41 @@ export class OrderComponent implements OnInit {
         if (pairName[1].toLowerCase() === "weth") {
           this.token1 = environment.wethAddress;
         }
+        if (pairName[1].toLowerCase() === "matic") {
+          this.token1 = environment.wmaticAddress;
+        }
 
         this.getAllowance();
+        this.getBalances();
         console.log("pairname", pairName);
         console.log("get pair", this.token0, this.token1);
         this.prices = this._orderService.getPairsPrice(this.token0, this.token1);
+      }
+    });
+  }
+
+  formChanged(form: FormGroup) {
+    form.get("quantity")?.valueChanges.subscribe((quantity: number) => {
+      let price = form.get("price")?.value || 0;
+      let total = price * quantity;
+      if (!isNaN(total)) {
+        form.get("total")?.patchValue(parseFloat(total.toPrecision(8)), { emitEvent: false });
+      }
+    });
+
+    form.get("price")?.valueChanges.subscribe((price: number) => {
+      let quantity = form.get("quantity")?.value || 0;
+      let total = price * quantity;
+      if (!isNaN(total)) {
+        form.get("total")?.patchValue(parseFloat(total.toPrecision(8)), { emitEvent: false });
+      }
+    });
+
+    form.get("total")?.valueChanges.subscribe((total: number) => {
+      let price = form.get("price")?.value || 0;
+      let quantity = total / price;
+      if (!isNaN(quantity)) {
+        form.get("quantity")?.patchValue(parseFloat(quantity.toPrecision(8)), { emitEvent: false });
       }
     });
   }
@@ -116,12 +159,24 @@ export class OrderComponent implements OnInit {
     }
   }
 
+  getBalances() {
+    this._tokenService.getBalance(this.token0, this.account).subscribe(r => {
+      this.balance0 = r;
+      console.log("balance0", r);
+    });
+
+    this._tokenService.getBalance(this.token1, this.account).subscribe(r => {
+      this.balance1 = r;
+      console.log("balance1", r);
+    });
+  }
+
   buy() {
-    this.createOrder(false);
+    this.createOrder(true);
   }
 
   sell() {
-    this.createOrder(true);
+    this.createOrder(false);
 
   }
 
@@ -141,16 +196,18 @@ export class OrderComponent implements OnInit {
       });;
   }
 
-  createOrder(sell: boolean) {
+  createOrder(buy: boolean) {
     this._globalService.setLoading(true);
-    let toSell = sell ? this.token1 : this.token0;
-    let toBuy = sell ? this.token0 : this.token1;
-    let data = this.form.value;
-    let quantity = parseFloat(data.quantity);
-    let price = parseFloat(data.price);
+    let toSell = buy ? this.token1 : this.token0;
+    let toBuy = buy ? this.token0 : this.token1;
+    let data = buy ? this.formBuy.value : this.formSell.value;
+    let quantity = data.quantity;
+    let price = data.price;
+
+    console.log(this.token0, this.pair0);
     let order: IOrderCreate = {
-      amountToBuy: sell ? quantity * price : quantity,
-      amountToSell: sell ? quantity : quantity * price,
+      amountToBuy: buy ? quantity : quantity * price,
+      amountToSell: buy ? quantity * price : quantity,
       tokenToBuy: toBuy,
       tokenToSell: toSell,
       toETH: toBuy === environment.wmaticAddress

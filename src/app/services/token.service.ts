@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 export class TokenService {
   _signer: any;
   _contract: OrderDexToken;
+  _webprovider?: ethers.providers.Web3Provider;
   oneToken: BigNumber = ethers.utils.parseUnits("1", 18);
   maxUint256: BigNumber = (BigNumber.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
@@ -22,16 +23,19 @@ export class TokenService {
 
     this._contract = new ethers.Contract(environment.contractAddress, OrderDexToken__factory.abi) as OrderDexToken;
     if (win.ethereum) {
-      const webprovider = new ethers.providers.Web3Provider(win.ethereum, "any");
-      this._signer = webprovider.getSigner();
+      this._webprovider = new ethers.providers.Web3Provider(win.ethereum, "any");
+      this._signer = this._webprovider.getSigner();
       this._contract = new ethers.Contract(environment.contractAddress, OrderDexToken__factory.abi, this._signer) as OrderDexToken;
     }
   }
 
 
   getBalance(tokenAddress: string, address: string): Observable<number> {
+    if (tokenAddress === environment.wmaticAddress && this._webprovider) {
+      return from(this._webprovider.getBalance(address)).pipe(map(r => parseFloat(ethers.utils.formatUnits(r, 18))));
+    }
     const token = new ethers.Contract(tokenAddress, ERC20__factory.abi, this._signer) as ERC20;
-    return from(token.balanceOf(address)).pipe(map(r => r.div(this.oneToken).toNumber()));
+    return from(token.balanceOf(address)).pipe(map(r => parseFloat(ethers.utils.formatUnits(r, 18))));
   }
 
   async addToken(): Promise<any> {
